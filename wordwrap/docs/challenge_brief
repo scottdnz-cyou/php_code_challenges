@@ -1,0 +1,33 @@
+...a small coding challenge before this interview that will help us assess some 
+of your coding skills.
+
+It should be a fairly quick exercise but it is not a race so please take as long 
+as you need and feel free to ask questions.
+
+The task is to write a function called 'wrap' that takes two arguments, $string 
+and $length.
+
+The function should return the string, but with new lines ("\n") added to ensure 
+that no line is longer than $length characters. 
+Always wrap at word boundaries if possible, only break a word if it is longer 
+than $length characters. 
+When breaking at word boundaries, replace all the whitespace between the two 
+words with a single newline character. 
+Any unbroken whitespace should be left unchanged.
+
+Please implement the function directly in PHP, rather than using the built-in
+ wordwrap() function.
+
+Pseudo:
+
+Have a word, then a non-word char.
+
+if non-word char is a space, and beyond len of line:
+    -ignore the space
+    -if word can fit in line, add the word
+        -otherwise, add the word to next line
+
+if non-word char is not a space, and beyond len of line:
+    if word & non-word char can fit in line, add the word
+        -otherwise, add the word & non-word char to next line
+

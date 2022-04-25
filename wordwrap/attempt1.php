@@ -6,12 +6,26 @@ function wrap(string $string, int $length) : string {
     $lenStr = count($chars);
     
     $eolReached = false;
-    $currentLineChars = [];
+    $currentLineChars = "";
     $currentWord = "";
-//    $lastWordBreakPosition = -1;
     $currentLinePosition = 0;
+    $maxPosition = $lenStr - 1;
+    
+    $lines = [];
     
     for ($i = 0; $i < $lenStr; $i++) {
+        if ($i > 0 && ($i % $length === 0 || $i === $maxPosition)) {
+            $eolReached = true;
+            echo "\n*EOL reached\n";
+        }
+        
+        if ($i === $maxPosition) {
+            $currentWord .= $chars[$i];
+            $currentLineChars .= $currentWord;
+            $lines[] = $currentWord;
+        }
+            
+        
         $isWantedChar = preg_match("/[a-zA-z\d]/", $chars[$i], $matches);
         
         
@@ -19,41 +33,62 @@ function wrap(string $string, int $length) : string {
             $currentWord .= $chars[$i];
         }
         else {
-             if ($currentLinePosition < $length) {
-                $currentLineChars[] = $currentWord;
-                $currentLineChars[] = $chars[$i];
+            if ($eolReached ) {
+//                echo "\n* eol reached && !isWantedChar, i: " . 
+//                        $currentLinePosition . "\n";
+                
+                if ($chars[$i] === " ") {
+                    
+                    if ( (strlen($currentLineChars) + strlen($currentWord)) <= $length) {
+                        $currentLineChars .= $currentWord;
+                        $lines[] = $currentLineChars;
+//                        $currentLineChars = "";
+                        
+                    }
+                    else {
+                        $lines[] = $currentLineChars;
+//                        $currentLineChars = ""; 
+                    }
+                }
+                else {
+                    // Seems problem with going beyond boundary & a wanted character
+                    
+                    if ( (strlen($currentLineChars) + (strlen($currentWord)) + 1) <= $length) {
+                        $currentLineChars .= $currentWord;
+                        $currentLineChars .= $chars[$i];
+                        $lines[] = $currentLineChars;
+//                        $currentLineChars = ""; 
+                    }
+                    else {
+                        $lines[] = $currentLineChars;
+//                        $currentLineChars = ""; 
+                        
+                    }
+                }
+                $currentLineChars = ""; 
+                $currentWord .= $chars[$i];
+                
+                $eolReached = false;
+                
             }
             else {
-                $currentLinePosition = 0;
-                $currentLineChars = [];
+                echo $currentWord . "\t";
+                $currentLineChars .= $currentWord;
+                $currentLineChars .= $chars[$i];
+                $currentWord = "";
             }
-            $currentWord = "";
         }
-        
-        if ($i % $length === 0) {
-            $eolReached = true;
-            echo "*EOL\n";
-        }
-        
-        if ($eolReached) {
-            echo " " . $chars[$i] . " ";
-        }
-        
-        if ($eolReached && !$isWantedChar ) {
-            echo "eolReached && !isWantedChar\n";
-            $currentLinePosition = 0;
-            $eolReached = false;
-            $lastWordBreakPosition = -1;
-        }
-        
-        $currentLinePosition++;
     }
+    
+    return implode("\n", $lines);
 }
+
+
 
 function main() {
     $inputString = file_get_contents("./data/dummy_string.txt");
-    $length = 70;
-    wrap($inputString, $length);
+    $length = 40;
+    echo wrap($inputString, $length);
 }
 
 main();
